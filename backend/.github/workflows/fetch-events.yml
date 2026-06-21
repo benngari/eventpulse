@@ -1,0 +1,39 @@
+# .github/workflows/fetch-events.yml
+# Fetches and classifies events every 30 minutes — 100% free, no AI API needed.
+
+name: Fetch & classify events
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch-and-classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install supabase requests beautifulsoup4 python-dotenv
+
+      - name: Fetch events
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          EVENTBRITE_TOKEN:     ${{ secrets.EVENTBRITE_TOKEN }}
+          GOOGLE_PLACES_KEY:    ${{ secrets.GOOGLE_PLACES_KEY }}
+        run: python fetcher/fetcher.py
+
+      - name: Classify events (no AI needed)
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python classifier/classifier.py
