@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, SlidersHorizontal, Moon, Sun } from 'lucide-react'
 import { useEvents } from '../hooks/useEvents'
 import { CATEGORIES } from '../lib/mockData'
 import EventCard from '../components/EventCard'
@@ -18,6 +18,14 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [freeOnly, setFreeOnly]       = useState(false)
   const [selected, setSelected]       = useState(null)
+  const [dark, setDark]               = useState(
+    () => localStorage.getItem('theme') === 'dark'
+  )
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark)
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+  }, [dark])
 
   const { events, loading, error } = useEvents({ category, searchQuery, freeOnly })
 
@@ -33,7 +41,16 @@ export default function Home() {
           </div>
           <span className={styles.date}>{TODAY}</span>
         </div>
-        <NotificationBell />
+        <div className={styles.headerRight}>
+          <button
+            className={styles.themeBtn}
+            onClick={() => setDark(d => !d)}
+            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {dark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          <NotificationBell />
+        </div>
       </header>
 
       <main className={styles.main}>
@@ -100,20 +117,17 @@ export default function Home() {
               <span>Finding events…</span>
             </div>
           )}
-
           {error && (
             <div className={styles.state}>
               <span>⚠ {error}</span>
             </div>
           )}
-
           {!loading && !error && events.length === 0 && (
             <div className={styles.state}>
               <span style={{ fontSize: 28 }}>🔍</span>
               <span>No events match. Try a different filter.</span>
             </div>
           )}
-
           {!loading && !error && events.length > 0 && (
             <div className={styles.grid}>
               {events.map(ev => (
@@ -124,7 +138,6 @@ export default function Home() {
         </section>
       </main>
 
-      {/* ── Detail modal ── */}
       {selected && <EventModal event={selected} onClose={() => setSelected(null)} />}
 
       <footer className={styles.footer}>
