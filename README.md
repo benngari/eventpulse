@@ -1,7 +1,7 @@
 EventPulse — Event Discovery for Nairobi
 
 
-A web app that automatically discovers and displays events happening today across Nairobi and Kenya  covering sports, vets & pets, music, food, community, health, and education.
+A web app that automatically discovers and displays events happening today across  Kenya  covering sports, vets & pets, music, food, community, health, and education.
 Features:
 
 Smart keyword search + category filters
